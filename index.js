@@ -232,6 +232,17 @@ function displayResults(results) {
 
   const container = document.createElement('div');
   container.className = 'grid gap-4 p-4 max-w-3xl mx-auto font-serif';
+  container.style.opacity = '0';
+  container.style.transform = 'translateY(20px)';
+  searchResults.appendChild(container);
+
+  // Force a reflow
+  container.offsetHeight;
+
+  // Start the container animation
+  container.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+  container.style.opacity = '1';
+  container.style.transform = 'translateY(0)';
 
   results.forEach((result, index) => {
     const { name, table } = result.item;
@@ -256,8 +267,6 @@ function displayResults(results) {
         `;
     container.appendChild(resultElement);
   });
-
-  searchResults.appendChild(container);
 }
 
 // Add all animation keyframes and styles
