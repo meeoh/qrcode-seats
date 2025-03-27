@@ -169,6 +169,25 @@ function debounce(func, wait) {
   };
 }
 
+// Clear all table highlights
+function clearTableHighlights() {
+  document.querySelectorAll('.table-highlight').forEach(el => {
+    el.classList.remove('active');
+  });
+}
+
+// Highlight specific tables
+function highlightTables(tables) {
+  clearTableHighlights();
+  tables.forEach(table => {
+    const tableNumber = table.replace('Table ', '');
+    const tableElement = document.getElementById(`table${tableNumber}`);
+    if (tableElement) {
+      tableElement.classList.add('active');
+    }
+  });
+}
+
 // Handle search input
 const searchInput = document.getElementById("searchInput");
 const searchResults = document.getElementById("searchResults");
@@ -178,6 +197,7 @@ const performSearch = debounce((query) => {
 
   if (query.length < 2) {
     fadeOutAndClear();
+    clearTableHighlights();
     return;
   }
 
@@ -186,33 +206,39 @@ const performSearch = debounce((query) => {
   // First fade out existing results
   fadeOutAndClear(() => {
     displayResults(results);
+    
+    // Highlight tables from search results
+    const tables = new Set(results.map(r => r.item.table));
+    highlightTables(Array.from(tables));
   });
-}, 50); // 150ms debounce delay
+}, 50);
 
 searchInput.addEventListener("input", (e) => {
   const query = e.target.value.trim();
   performSearch(query);
 });
 
-// Fade out existing results and then clear
+// Update fadeOutAndClear to also clear table highlights when no results
 function fadeOutAndClear(callback) {
   const existingResults = searchResults.children;
   if (existingResults.length === 0) {
-    searchResults.innerHTML = "";
+    clearTableHighlights();
     if (callback) callback();
     return;
   }
 
-  // Add fade out animation to existing results
-  Array.from(existingResults).forEach(element => {
-    element.style.animation = 'fadeOut 0.2s ease-out forwards';
+  // Remove fade-in class to trigger fade out
+  Array.from(existingResults).forEach(result => {
+    result.classList.remove("fade-in");
+    result.style.opacity = 0;
   });
 
-  // Wait for animation to complete before clearing
+  // Wait for fade out animation
   setTimeout(() => {
     searchResults.innerHTML = "";
+    clearTableHighlights();
     if (callback) callback();
-  }, 200);
+  }, 300);
 }
 
 // Display search results
