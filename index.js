@@ -64,14 +64,14 @@ const guestData = [
   { name: "Carol Pham", table: "Table 12" },
   { name: "Jarry Ahmad", table: "Table 12" },
   { name: "Leslie Orzel", table: "Table 12" },
-  { name: "Athar Zia", table: "Table 12" },
   { name: "Basil Ahmad", table: "Table 12" },
-  { name: "Kamal Zia", table: "Table 12" },
   { name: "Lorenzo Raymundo", table: "Table 12" },
   { name: "Shandi Raymundo", table: "Table 12" },
   { name: "Chance Nguyen", table: "Table 12" },
   { name: "Irfan Aziz", table: "Table 12" },
   { name: "Javaida Aziz", table: "Table 12" },
+  { name: "Daanish Abdullah", table: "Table 12" },
+  { name: "Waqas Abdullah", table: "Table 12" },
   { name: "Lily Liu", table: "Table 9" },
   { name: "David Liu", table: "Table 9" },
   { name: "Chesia Popovici", table: "Table 9" },
@@ -106,7 +106,6 @@ const guestData = [
   { name: "Max Halley", table: "Table 7" },
   { name: "Matt Marini", table: "Table 7", tags: [";)"] },
   { name: "Tyler Lutz", table: "Table 7" },
-  { name: "Evan Horvat", table: "Table 7" },
   { name: "Ian Nguyen", table: "Table 7" },
   { name: "Sameer Ahmad", table: "Table 11" },
   { name: "Aleeza Khan", table: "Table 11" },
@@ -129,8 +128,8 @@ const guestData = [
   { name: "Ariba Khan", table: "Table 8" },
   { name: "Brayden Bowler", table: "Table 8" },
   { name: "Alexandra Aiello", table: "Table 8" },
-  { name: "Daanish Abdullah", table: "Table 8" },
-  { name: "Waqas Abdullah", table: "Table 8" },
+  { name: "Evan Horvat", table: "Table 8" },
+  { name: "Sasha Cochrane", table: "Table 8" },
 ];
 
 let fuse = null;
@@ -142,7 +141,7 @@ function initializeFuse(data) {
     keys: ["name", "tags"],
     threshold: 0.3,
     includeScore: true,
-    minMatchCharLength: 2
+    minMatchCharLength: 2,
   });
   isDataLoaded = true;
   document.getElementById("loading").classList.remove("active");
@@ -171,19 +170,19 @@ function debounce(func, wait) {
 
 // Clear all table highlights
 function clearTableHighlights() {
-  document.querySelectorAll('.table-highlight').forEach(el => {
-    el.classList.remove('active');
+  document.querySelectorAll(".table-highlight").forEach((el) => {
+    el.classList.remove("active");
   });
 }
 
 // Highlight specific tables
 function highlightTables(tables) {
   clearTableHighlights();
-  tables.forEach(table => {
-    const tableNumber = table.replace('Table ', '');
+  tables.forEach((table) => {
+    const tableNumber = table.replace("Table ", "");
     const tableElement = document.getElementById(`table${tableNumber}`);
     if (tableElement) {
-      tableElement.classList.add('active');
+      tableElement.classList.add("active");
     }
   });
 }
@@ -202,13 +201,13 @@ const performSearch = debounce((query) => {
   }
 
   const results = fuse.search(query);
-  
+
   // First fade out existing results
   fadeOutAndClear(() => {
     displayResults(results);
-    
+
     // Highlight tables from search results
-    const tables = new Set(results.map(r => r.item.table));
+    const tables = new Set(results.map((r) => r.item.table));
     highlightTables(Array.from(tables));
   });
 }, 50);
@@ -228,7 +227,7 @@ function fadeOutAndClear(callback) {
   }
 
   // Remove fade-in class to trigger fade out
-  Array.from(existingResults).forEach(result => {
+  Array.from(existingResults).forEach((result) => {
     result.classList.remove("fade-in");
     result.style.opacity = 0;
   });
@@ -256,19 +255,19 @@ function displayResults(results) {
     return;
   }
 
-  const container = document.createElement('div');
-  container.className = 'grid gap-4 p-4 max-w-3xl mx-auto font-serif';
-  container.style.opacity = '0';
-  container.style.transform = 'translateY(20px)';
+  const container = document.createElement("div");
+  container.className = "grid gap-4 p-4 max-w-3xl mx-auto font-serif";
+  container.style.opacity = "0";
+  container.style.transform = "translateY(20px)";
   searchResults.appendChild(container);
 
   // Force a reflow
   container.offsetHeight;
 
   // Start the container animation
-  container.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
-  container.style.opacity = '1';
-  container.style.transform = 'translateY(0)';
+  container.style.transition = "opacity 0.3s ease-out, transform 0.3s ease-out";
+  container.style.opacity = "1";
+  container.style.transform = "translateY(0)";
 
   results.forEach((result, index) => {
     const { name, table } = result.item;
@@ -276,7 +275,7 @@ function displayResults(results) {
 
     const resultElement = document.createElement("div");
     resultElement.className =
-      'bg-white p-6 rounded-xl shadow-sm border border-[#8B9B6B]/20 hover:shadow-lg hover:border-[#8B9B6B]/40 transition-all duration-300 ease-in-out transform hover:-translate-y-1 opacity-0';
+      "bg-white p-6 rounded-xl shadow-sm border border-[#8B9B6B]/20 hover:shadow-lg hover:border-[#8B9B6B]/40 transition-all duration-300 ease-in-out transform hover:-translate-y-1 opacity-0";
     resultElement.style.animation = `fadeSlideIn 0.3s ease-out ${delay}ms forwards`;
     resultElement.innerHTML = `
             <div class="flex justify-between items-center">
@@ -296,9 +295,9 @@ function displayResults(results) {
 }
 
 // Add all animation keyframes and styles
-if (!document.querySelector('#search-animations')) {
-  const style = document.createElement('style');
-  style.id = 'search-animations';
+if (!document.querySelector("#search-animations")) {
+  const style = document.createElement("style");
+  style.id = "search-animations";
   style.textContent = `
     @keyframes fadeSlideIn {
       from {
