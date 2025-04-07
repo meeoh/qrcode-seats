@@ -138,10 +138,25 @@ let isDataLoaded = false;
 // Initialize Fuse.js with options
 function initializeFuse(data) {
   fuse = new Fuse(data, {
-    keys: ["name", "tags"],
-    threshold: 0.3,
+    keys: [{
+      name: 'name',
+      weight: 1
+    }, {
+      name: 'table',
+      weight: 1,
+      getFn: (obj) => {
+        // Extract number from table string and include both formats
+        const tableNum = obj.table.replace('Table ', '');
+        return [obj.table, tableNum];
+      }
+    }, {
+      name: 'tags',
+      weight: 0.5
+    }],
+    threshold: 0.4,
     includeScore: true,
-    minMatchCharLength: 2,
+    minMatchCharLength: 1,
+    useExtendedSearch: true
   });
   isDataLoaded = true;
   document.getElementById("loading").classList.remove("active");
@@ -194,13 +209,23 @@ const searchResults = document.getElementById("searchResults");
 const performSearch = debounce((query) => {
   if (!isDataLoaded) return;
 
-  if (query.length < 2) {
+  if (query.length < 1) {
     fadeOutAndClear();
     clearTableHighlights();
     return;
   }
 
-  const results = fuse.search(query);
+  let results;
+  // Check if query is just a number
+  if (/^\d+$/.test(query)) {
+    // Direct table number search
+    results = guestData
+      .filter(guest => guest.table === `Table ${query}`)
+      .map(item => ({ item, score: 0 }));
+  } else {
+    // Normal fuzzy search
+    results = fuse.search(query);
+  }
 
   // First fade out existing results
   fadeOutAndClear(() => {
